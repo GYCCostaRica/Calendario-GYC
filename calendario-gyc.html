@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendario GYC Costa Rica 2026</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy:  #003b5d;
+      --teal:  #2d7d92;
+      --gold:  #fec401;
+
+      --g-a:   #003b5d;   /* Ene–Abr */
+      --g-b:   #2d7d92;   /* May–Ago */
+      --g-c:   #b07d2a;   /* Sep–Dic */
+
+      --done-bg:     #f4f4f4;
+      --done-border: #bdbdbd;
+      --done-text:   #9e9e9e;
+
+      --curr-bg:     #fff3f3;
+      --curr-border: #e53935;
+      --curr-text:   #c62828;
+
+      --board-bg:     #f8f0ff;
+      --board-border: #8e24aa;
+      --board-text:   #6a1b9a;
+
+      --bg:     #f0f2f5;
+      --card:   #ffffff;
+      --line:   #e0e4ea;
+      --txt:    #1a202c;
+      --muted:  #6b7280;
+      --radius: 10px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--txt);
+      min-height: 100vh;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ── HEADER (mobile base) ── */
+    header {
+      background: var(--navy);
+      padding: 0 14px;
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      box-shadow: 0 2px 14px rgba(0,0,0,0.25);
+    }
+    .header-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .brand-text {
+      font-family: 'Cinzel', serif;
+      font-size: 14px; font-weight: 600;
+      color: #fff;
+      line-height: 1.2;
+    }
+    .brand-sub {
+      font-size: 10px; font-weight: 400;
+      color: rgba(255,255,255,0.55);
+      letter-spacing: 0.3px;
+    }
+    .year-pill {
+      background: var(--gold);
+      color: var(--navy);
+      font-family: 'Cinzel', serif;
+      font-weight: 700; font-size: 11px;
+      padding: 3px 10px; border-radius: 12px;
+      letter-spacing: 0.5px;
+      flex-shrink: 0;
+    }
+
+    /* ── FILTER BAR ── */
+    .filter-bar {
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+      padding: 8px 14px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .filter-bar::-webkit-scrollbar { display: none; }
+    .filter-row {
+      max-width: 860px;
+      margin: 0 auto;
+      display: flex;
+      gap: 6px;
+      white-space: nowrap;
+    }
+    .fpill {
+      padding: 5px 12px;
+      border-radius: 16px;
+      border: 1.5px solid var(--line);
+      font-size: 12px; font-weight: 500;
+      cursor: pointer;
+      background: #fff;
+      color: var(--muted);
+      transition: all 0.15s;
+      font-family: inherit;
+      -webkit-user-select: none; user-select: none;
+    }
+    .fpill.active { background: var(--navy); border-color: var(--navy); color: #fff; }
+    .fpill:active { opacity: 0.75; }
+
+    /* ── MAIN ── */
+    main {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 14px 10px 60px;
+    }
+
+    /* ── STATS ── */
+    .stats-row { display: flex; gap: 8px; margin-bottom: 14px; }
+    .stat-box {
+      flex: 1;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 10px 8px;
+      text-align: center;
+    }
+    .stat-n {
+      font-family: 'Cinzel', serif;
+      font-size: 22px; font-weight: 700; line-height: 1;
+      margin-bottom: 3px;
+    }
+    .stat-l { font-size: 11px; color: var(--muted); }
+    .stat-box.s-total .stat-n    { color: var(--navy); }
+    .stat-box.s-upcoming .stat-n { color: var(--teal); }
+    .stat-box.s-done .stat-n     { color: var(--done-text); }
+
+    /* ── LEYENDA ── */
+    .legend {
+      display: flex; flex-wrap: wrap;
+      gap: 10px 16px;
+      margin-bottom: 12px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+    }
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); }
+    .ldot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+
+    /* ── TOGGLE COMPLETADOS ── */
+    .toggle-done {
+      display: block; width: 100%;
+      padding: 9px;
+      background: none;
+      border: 1.5px dashed var(--line);
+      border-radius: 8px;
+      color: var(--muted);
+      font-size: 12px; font-family: inherit;
+      cursor: pointer;
+      margin-bottom: 18px;
+      transition: all 0.15s;
+    }
+    .toggle-done:active { background: var(--bg); }
+
+    /* ── MES GROUP ── */
+    .month-group { margin-bottom: 24px; }
+    .month-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .month-label {
+      font-family: 'Cinzel', serif;
+      font-size: 15px; font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--navy);
+      white-space: nowrap;
+    }
+    .month-line { flex: 1; height: 1px; background: var(--line); }
+    .month-count {
+      font-size: 10px; color: var(--muted);
+      background: var(--bg);
+      padding: 2px 7px; border-radius: 10px;
+      border: 1px solid var(--line);
+      white-space: nowrap;
+    }
+
+    /* ── EVENT CARD ── */
+    .e-wrap { margin-bottom: 7px; border-radius: var(--radius); overflow: hidden; }
+
+    .e-card {
+      display: flex;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+      -webkit-user-select: none; user-select: none;
+    }
+    .e-wrap.has-detail .e-card { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+
+    /* Tap feedback */
+    .e-card:active { opacity: 0.9; }
+
+    /* Left color bar */
+    .e-bar { width: 4px; flex-shrink: 0; }
+
+    /* Date badge */
+    .e-date {
+      width: 50px; flex-shrink: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 10px 2px;
+      border-right: 1px solid var(--line);
+    }
+    .e-day {
+      font-family: 'Cinzel', serif;
+      font-size: 20px; font-weight: 700; line-height: 1;
+    }
+    .e-mon {
+      font-size: 9px; font-weight: 600;
+      letter-spacing: 0.3px; text-transform: uppercase;
+      color: var(--muted); margin-top: 2px;
+    }
+    .e-dow { font-size: 9px; color: var(--muted); margin-top: 1px; }
+
+    /* Body */
+    .e-body { flex: 1; min-width: 0; padding: 10px 10px; }
+    .e-name {
+      font-size: 13px; font-weight: 600;
+      line-height: 1.35; margin-bottom: 4px;
+      word-break: break-word;
+    }
+    .e-meta { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; margin-bottom: 5px; }
+    .e-mi { display: flex; align-items: center; gap: 3px; font-size: 11px; color: var(--muted); }
+    .chips { display: flex; flex-wrap: wrap; gap: 4px; }
+    .chip {
+      font-size: 10px; padding: 1px 7px;
+      border-radius: 10px;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      color: var(--muted);
+    }
+    .mod-badge {
+      font-size: 9px; font-weight: 600;
+      letter-spacing: 0.3px;
+      padding: 2px 6px; border-radius: 4px;
+      text-transform: uppercase;
+    }
+    .mod-p { background: #e8f5e9; color: #2e7d32; }
+    .mod-v { background: #e3f2fd; color: #1565c0; }
+
+    /* Right status */
+    .e-status {
+      flex-shrink: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 8px 8px;
+      gap: 2px;
+      text-align: center;
+      min-width: 50px;
+    }
+    .e-days { font-family: 'Cinzel', serif; font-size: 15px; font-weight: 700; line-height: 1; }
+    .e-dlabel { font-size: 9px; letter-spacing: 0.4px; text-transform: uppercase; color: var(--muted); }
+    .e-chevron { display: none; }
+
+    /* ── CARD FOOTER ── */
+    .e-card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px;
+      padding-top: 7px;
+      border-top: 1px dashed var(--line);
+      gap: 8px;
+    }
+    .e-ver-mas {
+      display: none;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px; font-weight: 600;
+      color: var(--teal);
+      flex: 1;
+    }
+    .has-detail .e-ver-mas { display: flex; }
+    .e-vm-arrow {
+      display: inline-block;
+      font-size: 13px; line-height: 1;
+      transition: transform 0.22s ease;
+      flex-shrink: 0;
+    }
+    .e-wrap.expanded .e-vm-arrow { transform: rotate(180deg); }
+    .vm-open  { display: inline; }
+    .vm-close { display: none; }
+    .e-wrap.expanded .vm-open  { display: none; }
+    .e-wrap.expanded .vm-close { display: inline; }
+    .e-add-cal {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 11px; font-weight: 600;
+      color: var(--navy);
+      background: rgba(0,59,93,0.07);
+      border: 1.5px solid rgba(0,59,93,0.2);
+      border-radius: 7px;
+      padding: 3px 9px;
+      cursor: pointer;
+      font-family: inherit;
+      -webkit-user-select: none; user-select: none;
+      transition: background 0.15s;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-left: auto;
+    }
+    .has-detail .e-add-cal { margin-left: 0; }
+    .e-add-cal:active { background: rgba(0,59,93,0.18); }
+
+    /* ── DOWNLOAD BAR ── */
+    .dl-bar {
+      background: rgba(0,59,93,0.04);
+      border-bottom: 1px solid var(--line);
+      padding: 8px 14px;
+    }
+    .dl-inner {
+      max-width: 860px; margin: 0 auto;
+      display: flex; align-items: center;
+      gap: 10px; flex-wrap: wrap;
+    }
+    .dl-all-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 16px;
+      background: var(--navy); color: white;
+      border: none; border-radius: 8px;
+      font-size: 12px; font-weight: 600;
+      font-family: inherit; cursor: pointer;
+      -webkit-user-select: none; user-select: none;
+      transition: opacity 0.15s;
+    }
+    .dl-all-btn:active { opacity: 0.75; }
+    .dl-hint { font-size: 11px; color: var(--muted); }
+
+    /* ── EXPAND PANEL ── */
+    .e-detail {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.28s ease;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-top: none;
+      border-bottom-left-radius: var(--radius);
+      border-bottom-right-radius: var(--radius);
+    }
+    .e-wrap.expanded .e-detail { max-height: 300px; }
+    .e-detail-inner { padding: 10px 14px 12px; }
+    .e-detail-row { margin-bottom: 8px; }
+    .e-detail-row:last-child { margin-bottom: 0; }
+    .e-detail-label {
+      display: block;
+      font-size: 10px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.8px;
+      color: var(--muted); margin-bottom: 3px;
+    }
+    .e-detail-text {
+      font-size: 12px; line-height: 1.5; color: var(--txt);
+    }
+
+    /* ── STATE CLASSES ── */
+    .st-a .e-bar  { background: var(--g-a); }
+    .st-a .e-day  { color: var(--g-a); }
+    .st-a .e-days { color: var(--g-a); }
+
+    .st-b .e-bar  { background: var(--g-b); }
+    .st-b .e-day  { color: var(--g-b); }
+    .st-b .e-days { color: var(--g-b); }
+
+    .st-c .e-bar  { background: var(--g-c); }
+    .st-c .e-day  { color: var(--g-c); }
+    .st-c .e-days { color: var(--g-c); }
+
+    .st-done { opacity: 0.5; }
+    .st-done .e-card { background: var(--done-bg); }
+    .st-done .e-bar  { background: var(--done-border); }
+    .st-done .e-day  { color: var(--done-text); }
+
+    .st-cancelled { opacity: 0.6; }
+    .st-cancelled .e-card { background: #fff5f5; }
+    .st-cancelled .e-bar  { background: #ef5350; }
+    .st-cancelled .e-day  { color: var(--done-text); }
+    .st-cancelled .e-name { text-decoration: line-through; color: #9e9e9e; }
+    .st-cancelled .e-days { color: #ef5350; }
+    .st-cancelled .e-detail { background: #fff5f5; border-color: #ffcdd2; }
+
+    .st-curr .e-card { background: var(--curr-bg); border-color: #fcc; }
+    .st-curr .e-bar  { background: var(--curr-border); }
+    .st-curr .e-day  { color: var(--curr-text); }
+    .st-curr .e-days { color: var(--curr-text); }
+    .st-curr .e-name { color: var(--curr-text); }
+    .st-curr .e-detail { background: var(--curr-bg); border-color: #fcc; }
+
+    .st-board .e-card { background: var(--board-bg); border-color: #e1c4f0; }
+    .st-board .e-bar  { background: var(--board-border); }
+    .st-board .e-day  { color: var(--board-text); }
+    .st-board .e-days { color: var(--board-text); }
+    .st-board .e-name { color: var(--board-text); }
+    .st-board .e-detail { background: var(--board-bg); border-color: #e1c4f0; }
+
+    /* Pulso hoy */
+    .pulse-dot {
+      display: inline-block; width: 7px; height: 7px;
+      background: var(--curr-text); border-radius: 50%;
+      margin-right: 4px; vertical-align: middle;
+      animation: pulse 1.4s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.5);opacity:0.6} }
+
+    /* ── LOADING / EMPTY ── */
+    .loading, .empty { text-align: center; padding: 50px 20px; color: var(--muted); }
+    .spinner {
+      width: 28px; height: 28px;
+      border: 3px solid var(--line); border-top-color: var(--teal);
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+      margin: 0 auto 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── FOOTER ── */
+    footer { text-align: center; padding: 14px; font-size: 11px; color: var(--muted); }
+
+    /* ── MONTH NAV ── */
+    .month-nav {
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+      padding: 6px 14px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      position: sticky;
+      top: 52px;
+      z-index: 190;
+    }
+    .month-nav::-webkit-scrollbar { display: none; }
+    .month-nav-inner {
+      max-width: 860px; margin: 0 auto;
+      display: flex; gap: 5px;
+      white-space: nowrap;
+    }
+    .m-pill {
+      padding: 4px 10px;
+      border-radius: 14px;
+      border: 1.5px solid var(--line);
+      font-size: 11px; font-weight: 600;
+      cursor: pointer; background: #fff; color: var(--muted);
+      font-family: inherit; transition: all 0.15s;
+      -webkit-user-select: none; user-select: none; flex-shrink: 0;
+    }
+    .m-pill.curr-month { border-color: var(--teal); color: var(--teal); }
+    .m-pill.at-section { background: var(--teal); border-color: var(--teal); color: #fff; }
+    .m-pill:active { opacity: 0.7; }
+
+    /* ── BACK TO TOP ── */
+    .back-top {
+      position: fixed;
+      bottom: 22px; right: 16px;
+      width: 42px; height: 42px;
+      background: var(--navy); color: #fff;
+      border: none; border-radius: 50%;
+      font-size: 20px; line-height: 1;
+      cursor: pointer;
+      box-shadow: 0 3px 14px rgba(0,0,0,0.28);
+      z-index: 300;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.22s;
+      display: flex; align-items: center; justify-content: center;
+      -webkit-user-select: none; user-select: none;
+    }
+    .back-top.visible { opacity: 1; pointer-events: auto; }
+    .back-top:active { opacity: 0.75; }
+
+    /* ── DESKTOP ENHANCEMENTS ── */
+    @media (min-width: 600px) {
+      header { padding: 0 24px; }
+      .header-inner { height: 58px; }
+      .brand-text { font-size: 15px; }
+      main { padding: 20px 16px 60px; }
+      .filter-bar { padding: 9px 24px; }
+      .filter-row { gap: 7px; }
+      .fpill { padding: 5px 13px; }
+      .stats-row { gap: 10px; margin-bottom: 18px; }
+      .stat-box { padding: 12px 14px; }
+      .stat-n { font-size: 26px; }
+      .e-date { width: 58px; }
+      .e-day { font-size: 22px; }
+      .e-days { font-size: 17px; }
+      .e-status { min-width: 54px; padding: 10px 10px; }
+      .e-name { font-size: 13px; }
+      .e-body { padding: 10px 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <div style="display:flex;align-items:center;gap:9px;">
+      <img src="data:image/png;base64,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" alt="GYC" style="height:38px;width:38px;object-fit:contain;flex-shrink:0;">
+      <div>
+        <div class="brand-text">GYC Costa Rica</div>
+        <div class="brand-sub">Calendario de Actividades</div>
+      </div>
+    </div>
+    <div class="year-pill">2026</div>
+  </div>
+</header>
+
+<!-- NAV MESES -->
+<div class="month-nav" id="monthNav">
+  <div class="month-nav-inner" id="monthNavInner"></div>
+</div>
+
+<!-- FILTROS -->
+<div class="filter-bar">
+  <div class="filter-row" id="filterRow">
+    <button class="fpill active" data-f="all">Todos</button>
+    <button class="fpill" data-f="upcoming">Próximos</button>
+    <button class="fpill" data-f="presencial">Presencial</button>
+    <button class="fpill" data-f="virtual">Virtual</button>
+    <button class="fpill" data-f="board">Directiva</button>
+  </div>
+</div>
+
+<!-- DESCARGAR CALENDARIO -->
+<div class="dl-bar">
+  <div class="dl-inner">
+    <button class="dl-all-btn" id="dlAllBtn">📅 Añadir todo al calendario</button>
+    <span class="dl-hint">o toca 📅 en cada evento</span>
+  </div>
+</div>
+
+<main>
+
+  <div class="legend">
+    <div class="legend-item"><div class="ldot" style="background:var(--curr-border)"></div>Mes actual</div>
+    <div class="legend-item"><div class="ldot" style="background:var(--done-text)"></div>Completado</div>
+    <div class="legend-item"><div class="ldot" style="background:#ef5350"></div>Cancelado</div>
+    <div class="legend-item"><div class="ldot" style="background:var(--board-border)"></div>Directiva</div>
+  </div>
+
+  <button class="toggle-done" id="toggleDone">↓ Mostrar pasados y cancelados</button>
+
+  <div id="cal">
+    <div class="loading"><div class="spinner"></div>Cargando actividades…</div>
+  </div>
+</main>
+
+<footer>GYC Costa Rica 2026</footer>
+<button class="back-top" id="backTop" aria-label="Volver arriba">↑</button>
+
+<script>
+// ════════════════════════════════════════════════
+// DATOS
+// ════════════════════════════════════════════════
+const DEMO = [
+  {
+    fecha:'2026-02-07', mes:'Febrero', diaSem:'Sábado',
+    actividad:'Programa José María',
+    modalidad:'Presencial', lugar:'Iglesia José María Zeledón',
+    horaInicio:'', horaCierre:'',
+    encargados:'Directiva',
+    objetivo:'Realizar programa de JA sobre el libro de Daniel.',
+    comentarios:'',
+    tiempoRestante:'Completado'
+  },
+  {
+    fecha:'2026-04-11', mes:'Abril', diaSem:'Sábado',
+    actividad:'Programa adultos mayores',
+    modalidad:'Presencial', lugar:'Hogar Manos de Jesús',
+    horaInicio:'', horaCierre:'',
+    encargados:'Directiva',
+    objetivo:'Llevar programa y conseguir donación de 1 caja de leche para adultos mayores.',
+    comentarios:'',
+    tiempoRestante:'Completado'
+  },
+  {
+    fecha:'2026-05-01', mes:'Mayo', diaSem:'Viernes',
+    actividad:'CONGRESO — Día 1',
+    modalidad:'Presencial', lugar:'Centro Pastoral El Redil',
+    horaInicio:'', horaCierre:'',
+    encargados:'Directiva, Equipo de apoyo',
+    objetivo:'Adicciones — Llamado a la juventud.',
+    comentarios:'',
+    tiempoRestante:'Completado'
+  },
+  {
+    fecha:'2026-05-03', mes:'Mayo', diaSem:'Domingo',
+    actividad:'CONGRESO — Día 2',
+    modalidad:'Presencial', lugar:'Centro Pastoral El Redil',
+    horaInicio:'', horaCierre:'',
+    encargados:'Directiva, Equipo de apoyo',
+    objetivo:'Adicciones — Llamado a la juventud.',
+    comentarios:'',
+    tiempoRestante:'Completado'
+  },
+  {
+    fecha:'2026-06-28', mes:'Junio', diaSem:'Domingo',
+    actividad:'Taller Aposento Alto',
+    modalidad:'Presencial', lugar:'Watson — Parque como Fraijanes',
+    horaInicio:'', horaCierre:'',
+    encargados:'Vida devocional, Logística, Tesorería, Programación, Publicidad, Música',
+    objetivo:'Realizar programa de oración, estudio y convivio.',
+    comentarios:'Organizar merienda o almuerzo.',
+    tiempoRestante:''
+  },
+  {
+    fecha:'2026-07-04', mes:'Julio', diaSem:'Sábado',
+    actividad:'Visita Zona Indígena',
+    modalidad:'Presencial', lugar:'Vereh — Turrialba',
+    horaInicio:'', horaCierre:'',
+    encargados:'Evangelismo, Programación, Publicidad, Tesorería',
+    objetivo:'Realizar programa de culto para 2 grupos, conseguir comestibles y donación de ropa.',
+    comentarios:'',
+    tiempoRestante:''
+  },
+  {
+    fecha:'2026-08-02', mes:'Agosto', diaSem:'Domingo',
+    actividad:'Reunión Directiva',
+    modalidad:'Presencial', lugar:'Casa de Rebe, Atenas',
+    horaInicio:'', horaCierre:'',
+    encargados:'Todos',
+    objetivo:'',
+    comentarios:'',
+    tiempoRestante:''
+  },
+  {
+    fecha:'2026-07-26', mes:'Julio', diaSem:'Domingo',
+    actividad:'Visita Cárcel',
+    modalidad:'Presencial', lugar:'',
+    horaInicio:'', horaCierre:'',
+    encargados:'Evangelismo, Programación, Logística',
+    objetivo:'Realizar visita al centro penitenciario para compartir el amor de Dios y las actividades que nos permitan realizar.',
+    comentarios:'Cancelado: cambios en la logística de las cárceles.',
+    tiempoRestante:'Cancelado'
+  },
+  {
+    fecha:'2026-08-09', mes:'Agosto', diaSem:'Domingo',
+    actividad:'Aposento Alto — Seguimiento #1',
+    modalidad:'Presencial', lugar:'J. Watson',
+    horaInicio:'', horaCierre:'',
+    encargados:'',
+    objetivo:'Actividades de seguimiento a los que estuvieron en el congreso. Tema #1: ¿Cómo vencer el desánimo espiritual?',
+    comentarios:'Propuesta: hacer mini-quizes durante el estudio (2–3 pausas con trivias). Reconocer a los que participan con un detalle —libro u otro— para fomentar la participación.',
+    tiempoRestante:''
+  },
+  {
+    fecha:'2026-08-22', mes:'Agosto', diaSem:'Sábado',
+    actividad:'Estudio de Pilar GYC',
+    modalidad:'Presencial', lugar:'Por definir',
+    horaInicio:'', horaCierre:'',
+    encargados:'Vida devocional, Programación, Logística, Evangelismo, Publicidad, Tesorería',
+    objetivo:'Hacer día de estudio de Biblia y oración.',
+    comentarios:'Cancelado: era un estudio conjunto con la visita de las Aldeas.',
+    tiempoRestante:'Cancelado'
+  },
+  {
+    fecha:'2026-08-22', mes:'Agosto', diaSem:'Sábado',
+    actividad:'Aldeas SOS Tres Ríos',
+    modalidad:'Presencial', lugar:'Aldeas Infantiles SOS Tres Ríos',
+    horaInicio:'', horaCierre:'',
+    encargados:'Evangelismo, Programación, Logística, Vida devocional, Tesorería, Música',
+    objetivo:'Realizar visita a Aldeas SOS Tres Ríos. Conseguir donaciones para la aldea.',
+    comentarios:'Cancelado: se traslada a otro mes.',
+    tiempoRestante:'Cancelado'
+  },
+  {
+    fecha:'2026-09-12', mes:'Septiembre', diaSem:'Sábado',
+    actividad:'Sábado Joven — Quepos',
+    modalidad:'Presencial', lugar:'Quepos',
+    horaInicio:'', horaCierre:'',
+    encargados:'',
+    objetivo:'Realizar programa de sábado joven.',
+    comentarios:'',
+    tiempoRestante:''
+  },
+  {
+    fecha:'2026-09-13', mes:'Septiembre', diaSem:'Domingo',
+    actividad:'Feria de Salud — Quepos',
+    modalidad:'Presencial', lugar:'Quepos',
+    horaInicio:'', horaCierre:'',
+    encargados:'',
+    objetivo:'Apoyo en feria de salud.',
+    comentarios:'',
+    tiempoRestante:''
+  },
+  {
+    fecha:'2026-09-27', mes:'Septiembre', diaSem:'Domingo',
+    actividad:'Visita Cárcel',
+    modalidad:'Presencial', lugar:'',
+    horaInicio:'', horaCierre:'',
+    encargados:'Evangelismo, Programación, Logística',
+    objetivo:'Realizar visita al centro penitenciario para compartir el amor de Dios y las actividades que nos permitan realizar.',
+    comentarios:'Cancelado: cambios en la logística de las cárceles.',
+    tiempoRestante:'Cancelado'
+  },
+  {
+    fecha:'2026-09-27', mes:'Septiembre', diaSem:'Domingo',
+    actividad:'Aldeas SOS Tres Ríos',
+    modalidad:'Presencial', lugar:'Aldeas Infantiles Tres Ríos',
+    horaInicio:'', horaCierre:'',
+    encargados:'Evangelismo, Programación, Logística, Vida devocional, Tesorería, Música',
+    objetivo:'Realizar visita a la aldea SOS Tres Ríos. Conseguir donaciones para aldeas.',
+    comentarios:'Actividad evangelística que permite realizar seguimiento a los participantes del congreso.',
+    tiempoRestante:''
+  },
+  {
+    fecha:'2026-10-24', mes:'Octubre', diaSem:'Sábado',
+    actividad:'Reunión Directiva',
+    modalidad:'Presencial', lugar:'Por definir',
+    horaInicio:'', horaCierre:'',
+    encargados:'Todos',
+    objetivo:'Definir plan para el siguiente año.',
+    comentarios:'',
+    tiempoRestante:''
+  },
+  {
+    fecha:'2026-10-25', mes:'Octubre', diaSem:'Domingo',
+    actividad:'Visita Cárcel',
+    modalidad:'Presencial', lugar:'',
+    horaInicio:'', horaCierre:'',
+    encargados:'Evangelismo, Programación, Logística',
+    objetivo:'Realizar visita al centro penitenciario para compartir el amor de Dios y las actividades que nos permitan realizar.',
+    comentarios:'Cancelado.',
+    tiempoRestante:'Cancelado'
+  },
+  {
+    fecha:'2026-10-31', mes:'Octubre', diaSem:'Sábado',
+    actividad:'Retiro — Salud Mental',
+    modalidad:'Presencial', lugar:'Por definir',
+    horaInicio:'', horaCierre:'',
+    encargados:'Todos, Equipo de apoyo',
+    objetivo:'',
+    comentarios:'Cancelado: se realiza Aposento Alto en su lugar.',
+    tiempoRestante:'Cancelado'
+  },
+  {
+    fecha:'2026-10-31', mes:'Octubre', diaSem:'Sábado',
+    actividad:'Aposento Alto — Seguimiento #2',
+    modalidad:'Presencial', lugar:'J. Watson',
+    horaInicio:'', horaCierre:'',
+    encargados:'',
+    objetivo:'Tema por definir según encuesta de retroalimentación del congreso.',
+    comentarios:'',
+    tiempoRestante:''
+  },
+  {
+    fecha:'2026-11-01', mes:'Noviembre', diaSem:'Domingo',
+    actividad:'Retiro — Salud Mental',
+    modalidad:'Presencial', lugar:'Por definir',
+    horaInicio:'', horaCierre:'',
+    encargados:'Todos, Equipo de apoyo',
+    objetivo:'',
+    comentarios:'Cancelado: retiro pospuesto para enero 2027.',
+    tiempoRestante:'Cancelado'
+  },
+  {
+    fecha:'2026-11-22', mes:'Noviembre', diaSem:'Domingo',
+    actividad:'Aposento Alto — Seguimiento #2',
+    modalidad:'Presencial', lugar:'J. Watson',
+    horaInicio:'', horaCierre:'',
+    encargados:'',
+    objetivo:'Actividades de seguimiento a los que estuvieron en el congreso. Tema #2: ¿Cómo poner fin a una relación que me destruye?',
+    comentarios:'Cancelado.',
+    tiempoRestante:'Cancelado'
+  },
+  {
+    fecha:'2026-11-28', mes:'Noviembre', diaSem:'Sábado',
+    actividad:'Reunión Directiva',
+    modalidad:'Presencial', lugar:'Por definir',
+    horaInicio:'', horaCierre:'',
+    encargados:'Todos',
+    objetivo:'',
+    comentarios:'',
+    tiempoRestante:''
+  },
+  {
+    fecha:'2026-11-29', mes:'Noviembre', diaSem:'Domingo',
+    actividad:'Aldeas SOS Tres Ríos',
+    modalidad:'Presencial', lugar:'Aldeas Infantiles Tres Ríos',
+    horaInicio:'', horaCierre:'',
+    encargados:'Evangelismo, Programación, Logística, Vida devocional, Tesorería, Música',
+    objetivo:'Realizar visita a la aldea SOS Tres Ríos. Conseguir donaciones para aldeas.',
+    comentarios:'Actividad evangelística que permite realizar seguimiento.',
+    tiempoRestante:''
+  },
+  {
+    fecha:'2026-12-19', mes:'Diciembre', diaSem:'Sábado',
+    actividad:'Cantata — Cárcel o Calles',
+    modalidad:'Presencial', lugar:'',
+    horaInicio:'', horaCierre:'',
+    encargados:'Evangelismo, Programación, Logística, Publicidad',
+    objetivo:'Realizar visita al centro penitenciario para compartir el amor de Dios y las actividades que nos permitan realizar.',
+    comentarios:'',
+    tiempoRestante:''
+  },
+  {
+    fecha:'2026-12-20', mes:'Diciembre', diaSem:'Domingo',
+    actividad:'Aposento Alto — Programa de Agradecimiento',
+    modalidad:'Presencial', lugar:'J. Watson',
+    horaInicio:'', horaCierre:'',
+    encargados:'',
+    objetivo:'Actividades de seguimiento a los que estuvieron en el congreso. Programa de agradecimiento.',
+    comentarios:'Cancelado: se realizará un retiro en enero 2027.',
+    tiempoRestante:'Cancelado'
+  },
+  // ── Enero 2027 ──
+  {
+    fecha:'2027-01-30', mes:'Enero 2027', diaSem:'Sábado',
+    actividad:'Retiro — Día 1',
+    modalidad:'Presencial', lugar:'Por definir',
+    horaInicio:'', horaCierre:'',
+    encargados:'Todos, Equipo de apoyo',
+    objetivo:'Retiro anual GYC Costa Rica. Temática por definir.',
+    comentarios:'Pospuesto del 31 oct–1 nov 2026.',
+    tiempoRestante:''
+  },
+  {
+    fecha:'2027-01-31', mes:'Enero 2027', diaSem:'Domingo',
+    actividad:'Retiro — Día 2',
+    modalidad:'Presencial', lugar:'Por definir',
+    horaInicio:'', horaCierre:'',
+    encargados:'Todos, Equipo de apoyo',
+    objetivo:'',
+    comentarios:'',
+    tiempoRestante:''
+  },
+  // ── 2027 (Tentativo: 30 jul – 2 ago) ──
+  {
+    fecha:'2027-07-30', mes:'Julio 2027', diaSem:'Viernes',
+    actividad:'CONGRESO GYC 2027 — Día 1 (Tentativo)',
+    modalidad:'Presencial', lugar:'Por definir',
+    horaInicio:'', horaCierre:'',
+    encargados:'Directiva, Equipo de apoyo',
+    objetivo:'Congreso anual GYC Costa Rica. Fin de semana del 30 de julio al 2 de agosto de 2027.',
+    comentarios:'Fechas tentativas, sujetas a confirmación.',
+    tiempoRestante:''
+  },
+  {
+    fecha:'2027-07-31', mes:'Julio 2027', diaSem:'Sábado',
+    actividad:'CONGRESO GYC 2027 — Día 2 (Tentativo)',
+    modalidad:'Presencial', lugar:'Por definir',
+    horaInicio:'', horaCierre:'',
+    encargados:'Directiva, Equipo de apoyo',
+    objetivo:'',
+    comentarios:'',
+    tiempoRestante:''
+  },
+  {
+    fecha:'2027-08-01', mes:'Agosto 2027', diaSem:'Domingo',
+    actividad:'CONGRESO GYC 2027 — Día 3 (Tentativo)',
+    modalidad:'Presencial', lugar:'Por definir',
+    horaInicio:'', horaCierre:'',
+    encargados:'Directiva, Equipo de apoyo',
+    objetivo:'',
+    comentarios:'',
+    tiempoRestante:''
+  },
+  {
+    fecha:'2027-08-02', mes:'Agosto 2027', diaSem:'Lunes',
+    actividad:'CONGRESO GYC 2027 — Día 4 / Cierre (Tentativo)',
+    modalidad:'Presencial', lugar:'Por definir',
+    horaInicio:'', horaCierre:'',
+    encargados:'Directiva, Equipo de apoyo',
+    objetivo:'',
+    comentarios:'',
+    tiempoRestante:''
+  },
+];
+
+// ── HELPERS ──
+const MON_S = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+const DOW_S = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+
+function daysUntil(f) {
+  if (!f) return null;
+  const ev = new Date(f + 'T00:00:00');
+  const now = new Date(); now.setHours(0,0,0,0);
+  return Math.round((ev - now) / 86400000);
+}
+
+function monthGroup(mes) {
+  const m = (mes||'').toLowerCase();
+  const A = ['enero','febrero','marzo','abril'];
+  const B = ['mayo','junio','julio','agosto'];
+  return A.some(x=>m.includes(x)) ? 'a' : B.some(x=>m.includes(x)) ? 'b' : 'c';
+}
+
+function eventState(ev) {
+  if ((ev.tiempoRestante||'').toLowerCase() === 'completado') return 'done';
+  if ((ev.tiempoRestante||'').toLowerCase() === 'cancelado')  return 'cancelled';
+  const d = daysUntil(ev.fecha);
+  if (d !== null && d < 0) return 'done'; // pasado → completado automático
+  if (d !== null) {
+    const now = new Date();
+    const edt = new Date(ev.fecha + 'T00:00:00');
+    if (now.getFullYear()===edt.getFullYear() && now.getMonth()===edt.getMonth() && d >= 0) return 'curr';
+  }
+  const n = (ev.actividad||'').toLowerCase();
+  if (n.includes('reunión directiva') || n.includes('reunion directiva')) return 'board';
+  return monthGroup(ev.mes);
+}
+
+function fmtDays(d, state) {
+  if (state==='done')      return {n:'✓', l:'Completado'};
+  if (state==='cancelled') return {n:'✕', l:'Cancelado'};
+  if (d===null)       return {n:'—', l:''};
+  if (d<0)            return {n:'✓', l:'Pasado'};
+  if (d===0)          return {n:'¡HOY!', l:'', today:true};
+  if (d===1)          return {n:'1', l:'día'};
+  if (d<30)           return {n:d, l:'días'};
+  const mo=Math.floor(d/30), dy=d%30;
+  if (dy===0) return {n:mo+'m', l:''};
+  return {n:mo+'m '+dy+'d', l:''};
+}
+
+// ── ICS / CALENDAR EXPORT ──
+function escICS(s) {
+  if (!s) return '';
+  return String(s).replace(/\\/g,'\\\\').replace(/,/g,'\\,').replace(/;/g,'\\;').replace(/\n/g,'\\n');
+}
+
+function parse24h(t) {
+  if (!t) return null;
+  const s = t.toLowerCase().replace(/\s/g,'');
+  const pm = s.includes('p');
+  const nums = s.match(/\d+/g) || [];
+  let h = parseInt(nums[0]||0), m = parseInt(nums[1]||0);
+  if (pm && h !== 12) h += 12;
+  if (!pm && h === 12) h = 0;
+  return String(h).padStart(2,'0') + String(m).padStart(2,'0') + '00';
+}
+
+function nextDayStr(fechaStr) {
+  const d = new Date(fechaStr + 'T00:00:00');
+  d.setDate(d.getDate() + 1);
+  return d.toISOString().slice(0,10).replace(/-/g,'');
+}
+
+function buildVEVENT(ev, uid) {
+  const dc = ev.fecha.replace(/-/g,'');
+  let dtStart, dtEnd;
+  if (ev.horaInicio) {
+    const s = parse24h(ev.horaInicio);
+    const e = ev.horaCierre ? parse24h(ev.horaCierre)
+      : String(parseInt(s.slice(0,2))+2).padStart(2,'0') + s.slice(2);
+    dtStart = `DTSTART;TZID=America/Costa_Rica:${dc}T${s}`;
+    dtEnd   = `DTEND;TZID=America/Costa_Rica:${dc}T${e}`;
+  } else {
+    dtStart = `DTSTART;VALUE=DATE:${dc}`;
+    dtEnd   = `DTEND;VALUE=DATE:${nextDayStr(ev.fecha)}`;
+  }
+  const desc = [
+    ev.objetivo    ? `Objetivo: ${escICS(ev.objetivo)}`       : '',
+    ev.comentarios ? `Observaciones: ${escICS(ev.comentarios)}` : '',
+    ev.encargados  ? `Encargados: ${escICS(ev.encargados)}`   : '',
+    ev.modalidad   ? `Modalidad: ${ev.modalidad}`              : '',
+  ].filter(Boolean).join('\\n\\n');
+  const lines = [
+    'BEGIN:VEVENT',
+    `UID:${uid}`,
+    `DTSTAMP:${new Date().toISOString().replace(/[-:.]/g,'').slice(0,15)}Z`,
+    dtStart, dtEnd,
+    `SUMMARY:GYC · ${escICS(ev.actividad)}`,
+  ];
+  if (desc)     lines.push(`DESCRIPTION:${desc}`);
+  if (ev.lugar) lines.push(`LOCATION:${escICS(ev.lugar)}`);
+  lines.push('END:VEVENT');
+  return lines.join('\r\n');
+}
+
+const ICS_HEAD = [
+  'BEGIN:VCALENDAR','VERSION:2.0',
+  'PRODID:-//GYC Costa Rica//Calendario 2026//ES',
+  'CALSCALE:GREGORIAN','METHOD:PUBLISH',
+  'X-WR-CALNAME:GYC Costa Rica 2026',
+  'X-WR-TIMEZONE:America/Costa_Rica',
+  'BEGIN:VTIMEZONE','TZID:America/Costa_Rica',
+  'BEGIN:STANDARD',
+  'TZOFFSETFROM:-0600','TZOFFSETTO:-0600','TZNAME:CST',
+  'DTSTART:19700101T000000',
+  'END:STANDARD','END:VTIMEZONE',
+].join('\r\n');
+
+function wrapICS(body) {
+  return ICS_HEAD + '\r\n' + body + '\r\nEND:VCALENDAR';
+}
+
+function dlICS(content, filename) {
+  const blob = new Blob([content], { type: 'text/calendar;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 100);
+}
+
+function downloadAll() {
+  const body = allEvents
+    .filter(e => e.fecha && e.actividad)
+    .map((e,i) => buildVEVENT(e, `gyc2026-${e.fecha.replace(/-/g,'')}-${i}@gyc-cr`))
+    .join('\r\n');
+  dlICS(wrapICS(body), 'GYC-Costa-Rica-2026.ics');
+}
+
+function downloadOne(ev) {
+  const body = buildVEVENT(ev, `gyc-${ev.fecha.replace(/-/g,'')}-${Date.now()}@gyc-cr`);
+  const slug = (ev.actividad||'evento').slice(0,25).replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ]/g,'-');
+  dlICS(wrapICS(body), `GYC-${ev.fecha}-${slug}.ics`);
+}
+
+// ── RENDER CARD ──
+function cardHTML(ev, idx) {
+  const state = eventState(ev);
+  const d   = daysUntil(ev.fecha);
+  const di  = fmtDays(d, state);
+  const dt  = ev.fecha ? new Date(ev.fecha+'T00:00:00') : null;
+  const dayN = dt ? dt.getDate() : '?';
+  const monS = dt ? MON_S[dt.getMonth()] : '';
+  const dowS = dt ? DOW_S[dt.getDay()] : (ev.diaSem||'');
+
+  // All chips shown — no truncation
+  const chips = (ev.encargados||'').split(',').map(s=>s.trim()).filter(Boolean);
+  const chipHTML = chips.length
+    ? `<div class="chips">${chips.map(c=>`<span class="chip">${c}</span>`).join('')}</div>`
+    : '';
+
+  const isVirtual = (ev.modalidad||'').toLowerCase().includes('virtual');
+  const modHTML = ev.modalidad
+    ? `<span class="mod-badge ${isVirtual?'mod-v':'mod-p'}">${isVirtual?'Virtual':'Presencial'}</span>`
+    : '';
+
+  const placeHTML = ev.lugar ? `<span class="e-mi">📍 ${ev.lugar}</span>` : '';
+  const timeHTML  = ev.horaInicio ? `<span class="e-mi">🕐 ${ev.horaInicio}${ev.horaCierre?' – '+ev.horaCierre:''}</span>` : '';
+  const pulseHTML = di.today ? `<span class="pulse-dot"></span>` : '';
+
+  const hasDetail = !!(ev.objetivo || ev.comentarios);
+
+  // Build detail panel
+  let detailHTML = '';
+  if (hasDetail) {
+    let rows = '';
+    if (ev.objetivo)    rows += `<div class="e-detail-row"><span class="e-detail-label">Objetivo</span><span class="e-detail-text">${ev.objetivo}</span></div>`;
+    if (ev.comentarios) rows += `<div class="e-detail-row"><span class="e-detail-label">Observaciones</span><span class="e-detail-text">${ev.comentarios}</span></div>`;
+    detailHTML = `<div class="e-detail"><div class="e-detail-inner">${rows}</div></div>`;
+  }
+
+  const footerHTML = `<div class="e-card-footer">
+      <div class="e-ver-mas">
+        <span class="e-vm-arrow">▾</span>
+        <span class="vm-open">Ver detalle</span>
+        <span class="vm-close">Ocultar</span>
+      </div>
+      <button class="e-add-cal" data-idx="${idx}">📅 Añadir</button>
+    </div>`;
+
+  return `
+    <div class="e-wrap st-${state}${hasDetail?' has-detail':''}" data-idx="${idx}">
+      <div class="e-card">
+        <div class="e-bar"></div>
+        <div class="e-date">
+          <div class="e-day">${dayN}</div>
+          <div class="e-mon">${monS}</div>
+          <div class="e-dow">${dowS}</div>
+        </div>
+        <div class="e-body">
+          <div class="e-name">${pulseHTML}${ev.actividad||'—'}</div>
+          <div class="e-meta">${placeHTML}${timeHTML}${modHTML}</div>
+          ${chipHTML}
+          ${footerHTML}
+        </div>
+        <div class="e-status">
+          <div class="e-days">${di.n}</div>
+          ${di.l?`<div class="e-dlabel">${di.l}</div>`:''}
+        </div>
+      </div>
+      ${detailHTML}
+    </div>`;
+}
+
+// ── STATE ──
+let allEvents = [], showDone = false, activeFilter = 'all';
+
+// ── RENDER ──
+function render() {
+  let evs = allEvents.map((e,i) => ({...e, _idx:i}));
+
+  if (activeFilter === 'upcoming') evs = evs.filter(e => {
+    const d = daysUntil(e.fecha);
+    const tr = (e.tiempoRestante||'').toLowerCase();
+    return d !== null && d >= 0 && tr !== 'completado' && tr !== 'cancelado';
+  });
+  else if (activeFilter === 'presencial') evs = evs.filter(e => !(e.modalidad||'').toLowerCase().includes('virtual'));
+  else if (activeFilter === 'virtual')    evs = evs.filter(e =>  (e.modalidad||'').toLowerCase().includes('virtual'));
+  else if (activeFilter === 'board')      evs = evs.filter(e => {
+    const n = (e.actividad||'').toLowerCase();
+    return n.includes('reunión directiva') || n.includes('reunion directiva');
+  });
+
+  if (!showDone) evs = evs.filter(e => {
+    const tr = (e.tiempoRestante||'').toLowerCase();
+    if (tr === 'completado' || tr === 'cancelado') return false;
+    const d = daysUntil(e.fecha);
+    return d === null || d >= 0; // ocultar también los pasados automáticos
+  });
+
+  const cal = document.getElementById('cal');
+
+  if (!evs.length) {
+    cal.innerHTML = `<div class="empty">📅 No hay actividades para mostrar.</div>`;
+    return;
+  }
+
+  const grouped = new Map();
+  evs.forEach(e => {
+    const k = e.mes || 'Sin mes';
+    if (!grouped.has(k)) grouped.set(k, []);
+    grouped.get(k).push(e);
+  });
+
+  let html = '';
+  for (const [month, mes_evs] of grouped) {
+    const cnt = mes_evs.length;
+    const id = 'mes-' + month.toLowerCase().replace(/\s+/g,'-');
+    html += `<div class="month-group" id="${id}">
+      <div class="month-header">
+        <div class="month-label">${month}</div>
+        <div class="month-line"></div>
+        <div class="month-count">${cnt} ${cnt===1?'actividad':'actividades'}</div>
+      </div>
+      ${mes_evs.map(e => cardHTML(e, e._idx)).join('')}
+    </div>`;
+  }
+  cal.innerHTML = html;
+}
+
+// ── LOAD ──
+function loadData() {
+  allEvents = DEMO;
+  buildMonthNav();
+  render();
+}
+
+// ── MONTH NAV ──
+function buildMonthNav() {
+  const months = [], seen = new Set();
+  allEvents.forEach(e => { if (e.mes && !seen.has(e.mes)) { months.push(e.mes); seen.add(e.mes); } });
+
+  const now = new Date();
+  const MNAMES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const curFull = MNAMES[now.getMonth()];
+
+  document.getElementById('monthNavInner').innerHTML = months.map(m => {
+    const is27 = m.includes('2027');
+    const short = is27 ? m.slice(0,3) + '\u00A0\'27' : m.slice(0,3);
+    const isCur = m === curFull;
+    return `<button class="m-pill${isCur?' curr-month':''}" data-month="${m}">${short}</button>`;
+  }).join('');
+}
+
+// ── FILTER PILLS ──
+document.getElementById('filterRow').addEventListener('click', e => {
+  const pill = e.target.closest('.fpill');
+  if (!pill) return;
+  document.querySelectorAll('.fpill').forEach(p => p.classList.remove('active'));
+  pill.classList.add('active');
+  activeFilter = pill.dataset.f;
+  render();
+});
+
+// ── TOGGLE COMPLETADOS ──
+const toggleBtn = document.getElementById('toggleDone');
+toggleBtn.addEventListener('click', () => {
+  showDone = !showDone;
+  toggleBtn.textContent = showDone ? '↑ Ocultar pasados y cancelados' : '↓ Mostrar pasados y cancelados';
+  render();
+});
+
+// ── MONTH NAV SCROLL ──
+document.getElementById('monthNav').addEventListener('click', e => {
+  const pill = e.target.closest('.m-pill');
+  if (!pill) return;
+  const id = 'mes-' + pill.dataset.month.toLowerCase().replace(/\s+/g,'-');
+  const el = document.getElementById(id);
+  if (!el) return;
+  const offset = 52 + 44; // header + month-nav height
+  const top = el.getBoundingClientRect().top + window.scrollY - offset;
+  window.scrollTo({ top, behavior: 'smooth' });
+  // highlight active pill
+  document.querySelectorAll('.m-pill').forEach(p => p.classList.remove('at-section'));
+  pill.classList.add('at-section');
+});
+
+// ── BACK TO TOP ──
+const backTopBtn = document.getElementById('backTop');
+window.addEventListener('scroll', () => {
+  backTopBtn.classList.toggle('visible', window.scrollY > 280);
+}, { passive: true });
+backTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+// ── EXPAND CARD + CALENDAR DOWNLOAD ──
+document.getElementById('cal').addEventListener('click', e => {
+  // Calendar button — intercept before expand
+  const calBtn = e.target.closest('.e-add-cal');
+  if (calBtn) {
+    e.stopPropagation();
+    const i = parseInt(calBtn.dataset.idx);
+    if (!isNaN(i) && allEvents[i]) downloadOne(allEvents[i]);
+    return;
+  }
+  // Expand / collapse card
+  const card = e.target.closest('.e-card');
+  if (!card) return;
+  const wrap = card.closest('.e-wrap.has-detail');
+  if (!wrap) return;
+  wrap.classList.toggle('expanded');
+});
+
+document.getElementById('dlAllBtn').addEventListener('click', downloadAll);
+
+loadData();
+</script>
+</body>
+</html>
