@@ -1,0 +1,125 @@
+{
+  "organizacion": "GYC Costa Rica",
+  "titulo": "Calendario de actividades",
+  "logo": "logo.png",
+  "anio": 2027,
+  "categorias": [
+    {
+      "id": "libremente",
+      "nombre": "Retiro LibreMente",
+      "color": "#a98bd8"
+    },
+    {
+      "id": "reuniones",
+      "nombre": "Reuniones presenciales",
+      "color": "#3cbcae"
+    },
+    {
+      "id": "posibles",
+      "nombre": "Posibles actividades",
+      "color": "#c9a646"
+    },
+    {
+      "id": "congreso",
+      "nombre": "Congreso",
+      "color": "#e07a63"
+    },
+    {
+      "id": "postcongreso",
+      "nombre": "Postcongreso · fechas por analizar",
+      "color": "#c9a646"
+    }
+  ],
+  "actividades": [
+    {
+      "id": "a1",
+      "categoria": "libremente",
+      "titulo": "",
+      "inicio": "2027-01-30",
+      "fin": "2027-01-31",
+      "alternativa": false,
+      "nota": ""
+    },
+    {
+      "id": "a2",
+      "categoria": "reuniones",
+      "titulo": "",
+      "inicio": "2027-01-24",
+      "fin": "2027-01-24",
+      "alternativa": false,
+      "nota": ""
+    },
+    {
+      "id": "a3",
+      "categoria": "reuniones",
+      "titulo": "",
+      "inicio": "2027-07-24",
+      "fin": "2027-07-24",
+      "alternativa": false,
+      "nota": ""
+    },
+    {
+      "id": "a4",
+      "categoria": "reuniones",
+      "titulo": "",
+      "inicio": "2027-10-23",
+      "fin": "2027-10-24",
+      "alternativa": false,
+      "nota": ""
+    },
+    {
+      "id": "a5",
+      "categoria": "posibles",
+      "titulo": "",
+      "inicio": "2027-03-06",
+      "fin": "2027-03-07",
+      "alternativa": false,
+      "nota": ""
+    },
+    {
+      "id": "a6",
+      "categoria": "posibles",
+      "titulo": "",
+      "inicio": "2027-05-29",
+      "fin": "2027-05-30",
+      "alternativa": true,
+      "nota": ""
+    },
+    {
+      "id": "a7",
+      "categoria": "congreso",
+      "titulo": "",
+      "inicio": "2027-07-30",
+      "fin": "2027-08-02",
+      "alternativa": false,
+      "nota": ""
+    },
+    {
+      "id": "a8",
+      "categoria": "postcongreso",
+      "titulo": "",
+      "inicio": "2027-09-25",
+      "fin": "2027-09-26",
+      "alternativa": false,
+      "nota": ""
+    },
+    {
+      "id": "a9",
+      "categoria": "postcongreso",
+      "titulo": "",
+      "inicio": "2027-11-13",
+      "fin": "2027-11-14",
+      "alternativa": false,
+      "nota": ""
+    },
+    {
+      "id": "a10",
+      "categoria": "postcongreso",
+      "titulo": "",
+      "inicio": "2027-12-11",
+      "fin": "2027-12-12",
+      "alternativa": false,
+      "nota": ""
+    }
+  ]
+}
